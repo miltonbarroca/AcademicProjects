@@ -1,0 +1,57 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <omp.h>
+#include <time.h>
+
+#define N 4
+
+void preencherMatriz(int matriz[N][N]) {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            matriz[i][j] = rand() % 10;
+        }
+    }
+}
+
+void imprimirMatriz(int matriz[N][N]) {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            printf("%d ", matriz[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+void produtoMatricial(int A[N][N], int B[N][N], int C[N][N]) {
+    #pragma omp parallel for
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            C[i][j] = 0;
+            for (int k = 0; k < N; k++) {
+                C[i][j] += A[i][k] * B[k][j];
+            }
+        }
+    }
+}
+
+int main() {
+    srand(time(NULL));
+
+    int A[N][N], B[N][N], C[N][N];
+
+    preencherMatriz(A);
+    preencherMatriz(B);
+
+    printf("Matriz A:\n");
+    imprimirMatriz(A);
+
+    printf("\nMatriz B:\n");
+    imprimirMatriz(B);
+
+    produtoMatricial(A, B, C);
+
+    printf("\nMatriz C (Resultado do Produto):\n");
+    imprimirMatriz(C);
+
+    return 0;
+}
